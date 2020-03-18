@@ -18,4 +18,8 @@ public class Category {
         items.add(item);
     }
 
+    public String getName(){
+        return name;
+    }
+
 }

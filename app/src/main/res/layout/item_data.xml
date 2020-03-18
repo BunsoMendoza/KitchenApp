@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:stretchColumns="1"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+    <TableRow
+        android:id="@+id/data_row_id">
+
+
+        <EditText
+            android:id="@+id/input_id"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:padding="5dp"
+            android:background="@drawable/cell_shape"
+            android:gravity="center"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/item_name_id"
+            android:layout_column="1"
+            android:gravity="center"
+            android:background="@drawable/cell_shape"
+            android:padding="5dp"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/item_par_id"
+            android:layout_width="40dp"
+            android:background="@drawable/cell_shape"
+            android:gravity="center"
+            android:padding="5dp"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:id="@+id/item_unit_id"
+            android:background="@drawable/cell_shape"
+            android:padding="5dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_width="80dp"/>
+</TableRow>
+</TableLayout>
