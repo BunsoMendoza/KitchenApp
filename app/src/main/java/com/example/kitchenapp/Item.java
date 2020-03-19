@@ -3,16 +3,14 @@ package com.example.kitchenapp;
 public class Item {
     String name;
     int par;
-    int actual;
     String unitOfMeasurement;
-    int amountNeeded;
 
-    public Item(String name, int par, String unitOfMeasurement){
-        this.name = name;
-        this.par = par;
-        this.unitOfMeasurement= unitOfMeasurement;
-        actual=0;
-        amountNeeded=0;
+
+    public Item(){
+        name = "name";
+        par = 0;
+        unitOfMeasurement= "unitOfMeasurement";
+
     }
 
     public void setName(String name){
@@ -24,9 +22,7 @@ public class Item {
     public void setUnitOfMeasurement(String unitOfMeasurement){
         this.unitOfMeasurement = unitOfMeasurement;
     }
-    public void setActual(int actual){
-        this.actual = actual;
-    }
+
 
     public String getName(){
         return name;
@@ -37,8 +33,6 @@ public class Item {
     public String getUnitOfMeasurement(){
         return unitOfMeasurement;
     }
-    public int getActual(){
-        return actual;
-    }
+
 
 }
