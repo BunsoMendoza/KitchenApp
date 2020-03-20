@@ -8,10 +8,17 @@ public class Item {
 
 
     public Item(){
-        id = -1;
+
         name = "name";
         par = "0";
         unitOfMeasurement= "unitOfMeasurement";
+
+    }
+    public Item(String name, String par, String unit){
+
+        this.name = name;
+        this.par = par;
+        this.unitOfMeasurement = unit;
 
     }
 

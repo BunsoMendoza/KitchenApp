@@ -26,7 +26,6 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
     private static final String _ID = "id";
     //Dropping database
     private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_NAME;
-    private Item item = new Item();
     //how database looks
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + "(" +
@@ -106,12 +105,11 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
             ArrayList<Item> items = new ArrayList<>();
 
             while (cursor.moveToNext()) {
-
-                item.setName(cursor.getString(cursor.getColumnIndex("name")));
-                item.setPar(cursor.getString(cursor.getColumnIndex("par")));
-                item.setUnitOfMeasurement(cursor.getString(cursor.getColumnIndex("units")));
-                items.add(item);
-
+                String name, par, unit;
+                name = (cursor.getString(cursor.getColumnIndex("name")));
+                par = (cursor.getString(cursor.getColumnIndex("par")));
+                unit = (cursor.getString(cursor.getColumnIndex("units")));
+                items.add( new Item(name, par, unit));
             }
             cursor.close();
             return items;
