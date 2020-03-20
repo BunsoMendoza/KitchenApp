@@ -24,19 +24,23 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:imeOptions="actionDone"
-        android:singleLine="true"/>
+        android:singleLine="true"
+        android:inputType="textNoSuggestions"
+        />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Par" />
+        android:text="Par"
+        />
 
     <EditText
         android:id="@+id/input_par"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:imeOptions="actionDone"
-        android:singleLine="true"/>
+        android:singleLine="true"
+        android:inputType="textNoSuggestions"/>
 
 
     <TextView
@@ -49,7 +53,8 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:imeOptions="actionDone"
-        android:singleLine="true"/>
+        android:singleLine="true"
+        android:inputType="textNoSuggestions"/>
 
 
     <LinearLayout

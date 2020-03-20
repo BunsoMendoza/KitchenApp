@@ -13,13 +13,13 @@ public class AddItemActivity extends Activity {
     EditText itemInput;
     EditText uomInput;
     String name, par, unitOfMeasurement;
-
-
+    KitchenAppDbHelper db;
     private Button addItemButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_item);
+        db = new KitchenAppDbHelper(this);
         addItemButton = findViewById(R.id.addItem);
         parInput = (EditText) findViewById(R.id.input_par);
         itemInput = (EditText) findViewById(R.id.input_item);
@@ -31,9 +31,7 @@ public class AddItemActivity extends Activity {
             public void onClick(View v) {
                // item.par = Integer.parseInt(parInput.getText().toString());
 
-              name = itemInput.getText().toString();
-              par = parInput.getText().toString();
-              unitOfMeasurement = uomInput.getText().toString();
+              dbItem();
 
                 addItem();
             }
@@ -44,15 +42,17 @@ public class AddItemActivity extends Activity {
     }
 
 
+    public void dbItem(){
+        name = itemInput.getText().toString();
+        par = parInput.getText().toString();
+        unitOfMeasurement = uomInput.getText().toString();
+        db.addItem(name, par, unitOfMeasurement);
 
+}
 
 
     public void addItem(){
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("name", name);
-        intent.putExtra("par", par);
-        intent.putExtra("unitOfMeasurement", unitOfMeasurement);
-
         startActivity(intent);
     }
 

@@ -1,14 +1,16 @@
 package com.example.kitchenapp;
 
 public class Item {
+    int id;
     String name;
-    int par;
+    String par;
     String unitOfMeasurement;
 
 
     public Item(){
+        id = -1;
         name = "name";
-        par = 0;
+        par = "0";
         unitOfMeasurement= "unitOfMeasurement";
 
     }
@@ -16,7 +18,7 @@ public class Item {
     public void setName(String name){
         this.name = name;
     }
-    public void setPar(int par){
+    public void setPar(String par){
         this.par = par;
     }
     public void setUnitOfMeasurement(String unitOfMeasurement){
@@ -27,7 +29,7 @@ public class Item {
     public String getName(){
         return name;
     }
-    public int getPar(){
+    public String getPar(){
         return par;
     }
     public String getUnitOfMeasurement(){
