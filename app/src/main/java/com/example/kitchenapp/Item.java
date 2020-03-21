@@ -3,29 +3,31 @@ package com.example.kitchenapp;
 public class Item {
     int id;
     String name;
-    String par;
+    int par;
     String unitOfMeasurement;
+    String category;
 
 
     public Item(){
-
+        category = "";
         name = "name";
-        par = "0";
+        par = 0;
         unitOfMeasurement= "unitOfMeasurement";
 
     }
-    public Item(String name, String par, String unit){
+    public Item(String name, int par, String unit, String category){
 
         this.name = name;
         this.par = par;
         this.unitOfMeasurement = unit;
+        this.category = category;
 
     }
 
     public void setName(String name){
         this.name = name;
     }
-    public void setPar(String par){
+    public void setPar(int par){
         this.par = par;
     }
     public void setUnitOfMeasurement(String unitOfMeasurement){
@@ -36,7 +38,7 @@ public class Item {
     public String getName(){
         return name;
     }
-    public String getPar(){
+    public int getPar(){
         return par;
     }
     public String getUnitOfMeasurement(){

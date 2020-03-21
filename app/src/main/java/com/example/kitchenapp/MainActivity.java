@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,8 +21,9 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     String itemName;
-    String itemPar;
+    int itemPar;
     String itemUnitOfMeasurement;
+    String itemCategory;
     private Button addButton;
     private Button calculateButton;
     KitchenAppDbHelper db;
@@ -76,15 +78,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void createRow(String name, String par, String unit) {
+    public void createRow(String name, int par, String unit) {
         TableLayout tableLayout = (TableLayout) findViewById(R.id.table_main);
         TableRow row = new TableRow(this);
         EditText editText = new EditText(this);
         TextView nameTextView = new TextView(this);
         TextView parTextView = new TextView(this);
         TextView unitOfMeasurement = new TextView(this);
+        editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL |
+                InputType.TYPE_NUMBER_FLAG_SIGNED);
         nameTextView.setText(name);
-        parTextView.setText(par);
+        parTextView.setText(String.valueOf(par));
         unitOfMeasurement.setText(unit);
         format(nameTextView);
         format(parTextView);
