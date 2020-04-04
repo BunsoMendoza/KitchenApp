@@ -50,8 +50,7 @@ public class AddItemActivity extends Activity {
                // item.par = Integer.parseInt(parInput.getText().toString());
 
               dbItem();
-
-                addItem();
+              addItem();
             }
         });
 

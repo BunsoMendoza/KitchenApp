@@ -16,26 +16,30 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
+
 import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity {
+    int id;
     String itemName;
     int itemPar;
     String itemUnitOfMeasurement;
     String itemCategory;
     private Button addButton;
     private Button calculateButton;
+    private Button clearButton;
     KitchenAppDbHelper db;
 
-
+    ArrayList<Item> items = new ArrayList<Item>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         db = new KitchenAppDbHelper(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        clearButton = findViewById(R.id.clear_button);
         addButton = findViewById(R.id.add_button);
         calculateButton = findViewById(R.id.calculate_button);
         /*Bundle extras = getIntent().getExtras();
@@ -46,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
             itemUnitOfMeasurement = extras.getString("unitOfMeasurement");
             createRow(itemName, itemPar, itemUnitOfMeasurement);
         }*/
-        ArrayList<Item> items = new ArrayList<Item>();
+
 
 
         if(!db.isEmpty()){
@@ -55,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
                 itemName = i.getName();
                 itemPar = i.getPar();
                 itemUnitOfMeasurement = i.getUnitOfMeasurement();
-                createRow(itemName, itemPar, itemUnitOfMeasurement);
+                id = i.getID();
+                createRow(itemName, itemPar, itemUnitOfMeasurement, id);
             }
         }
 
@@ -68,6 +73,13 @@ public class MainActivity extends AppCompatActivity {
         calculateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                calculateResults();
+
+            }
+        });
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 db.clearTable();
                 finish();
                 startActivity(getIntent());
@@ -78,15 +90,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void createRow(String name, int par, String unit) {
+    public void createRow(String name, int par, String unit , int rowID) {
         TableLayout tableLayout = (TableLayout) findViewById(R.id.table_main);
         TableRow row = new TableRow(this);
         EditText editText = new EditText(this);
+        editText.setId(rowID);
         TextView nameTextView = new TextView(this);
         TextView parTextView = new TextView(this);
         TextView unitOfMeasurement = new TextView(this);
-        editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL |
-                InputType.TYPE_NUMBER_FLAG_SIGNED);
+        editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
         nameTextView.setText(name);
         parTextView.setText(String.valueOf(par));
         unitOfMeasurement.setText(unit);
@@ -114,9 +126,26 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
     public void calculateResults() {
+        actualDB();
         Intent intent = new Intent(this, ResultsActivity.class);
         startActivity(intent);
+    }
+
+    public void actualDB(){
+
+        EditText text;
+        int actualAmount;
+        for (Item i : items) {
+            text = (EditText) findViewById(i.id);
+            actualAmount = Integer.parseInt(text.getText().toString());
+            i.actual = actualAmount;
+            db.addToActualDB(i.name, i.par, i.unitOfMeasurement, i.actual);
+        }
+
+
+
     }
 
 
