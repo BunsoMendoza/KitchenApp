@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.InputType;
@@ -18,6 +17,7 @@ import android.widget.LinearLayout.LayoutParams;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -25,13 +25,15 @@ public class MainActivity extends AppCompatActivity {
     String itemName;
     int itemPar;
     String itemUnitOfMeasurement;
-    String itemCategory;
+    String categoryName;
     private Button addButton;
     private Button calculateButton;
     private Button clearButton;
     KitchenAppDbHelper db;
+    HashMap<String, ArrayList<Item>> categoryHashMap = new HashMap<>();
 
     ArrayList<Item> items = new ArrayList<Item>();
+    ArrayList<Item> categoryArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +55,23 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        if(!db.isEmpty()){
-            items = db.getItems();
-            for (Item i : items) {
-                itemName = i.getName();
-                itemPar = i.getPar();
-                itemUnitOfMeasurement = i.getUnitOfMeasurement();
-                id = i.getID();
-                createRow(itemName, itemPar, itemUnitOfMeasurement, id);
+        if(!db.isEmpty()) {
+            categoryHashMap = db.getItems();
+
+            for (String category : categoryHashMap.keySet()) {
+                createCategoryHeader(category);
+                items = categoryHashMap.get(category);
+
+                for (Item i : items) {
+
+                    itemName = i.getName();
+                    itemPar = i.getPar();
+                    itemUnitOfMeasurement = i.getUnitOfMeasurement();
+                    id = i.getID();
+                    createRow(itemName, itemPar, itemUnitOfMeasurement, id);
+
+
+                }
             }
         }
 
@@ -89,6 +100,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void createCategoryHeader(String categoryName) {
+        TableLayout tableLayout = (TableLayout) findViewById(R.id.table_main);
+        TableRow row = new TableRow(this);
+        TextView header = new TextView(this);
+        header.setText(categoryName);
+        format(header);
+        row.addView(header);
+        tableLayout.addView(row, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+    }
 
     public void createRow(String name, int par, String unit , int rowID) {
         TableLayout tableLayout = (TableLayout) findViewById(R.id.table_main);

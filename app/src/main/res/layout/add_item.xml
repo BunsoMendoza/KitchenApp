@@ -56,18 +56,23 @@
         android:singleLine="true"
         android:inputType="textNoSuggestions"/>
 
-
+    <Button
+        android:id="@+id/addItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ADD" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center|bottom"
         android:orientation="horizontal">
-
         <Button
-            android:id="@+id/addItem"
+            android:id="@+id/addCategoryActivity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ADD" />
+            android:text="ADD Category" />
+
+
     </LinearLayout>
 
 </LinearLayout>

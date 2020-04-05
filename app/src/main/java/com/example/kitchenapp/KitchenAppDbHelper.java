@@ -8,11 +8,14 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class KitchenAppDbHelper extends SQLiteOpenHelper {
 
-
+    ArrayList<Item> items;
+    List<String> categoryNames;
+    HashMap<String, ArrayList<Item>> categoryHashMap = new HashMap<>();
     // If you change the database schema, you must increment the database version.
     //database name
     public static final int DATABASE_VERSION = 1;
@@ -20,6 +23,7 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
     //Table Name
     public static final String ITEMS = "itemDB";
     public static final String CURRENT_AMOUNT = "resultsDB";
+    public static final String CATEGORY_TABLE = "categoryTable";
     //columns
     public static final String CATEGORY = "category";
     public static final String NAME_COLUMN = "name";
@@ -31,7 +35,13 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
     //Dropping table
     private static final String DELETE_ALL_ENTRIES = "DROP TABLE IF EXISTS " + ITEMS;
     private static final String DELETE_ENTRIES = "DROP TABLE IF EXISTS " + CURRENT_AMOUNT;
+    private static final String DELETE_ALL_CATEGORIES = "DROP TABLE IF EXISTS " + CATEGORY_TABLE;
     //how table looks
+    private static final String CREATE_CATEGORY_TABLE =
+            "CREATE TABLE " + CATEGORY_TABLE + "(" +
+                    _ID + " INTEGER PRIMARY KEY," +
+                    CATEGORY + " TEXT)" ;
+
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + ITEMS + "(" +
                     _ID + " INTEGER PRIMARY KEY," +
@@ -48,7 +58,7 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
                     PAR_COLUMN + " INTEGER," +
                     ACTUAL_COLUMN + " INTEGER," +
                     UOM_COLUMN + " TEXT, " +
-                    TIMESTAMP +" DATETIME DEFAULT CURRENT_TIMESTAMP)";
+                    TIMESTAMP + " DATETIME DEFAULT CURRENT_TIMESTAMP)";
 
 
     KitchenAppDbHelper(Context context) {
@@ -59,11 +69,15 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
         db.execSQL(CREATE_ACTUAL_ENTRIES);
+        db.execSQL(CREATE_CATEGORY_TABLE);
     }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
         db.execSQL(DELETE_ALL_ENTRIES);
+        db.execSQL(DELETE_ENTRIES);
+        db.execSQL(DELETE_ALL_CATEGORIES);
         onCreate(db);
     }
 
@@ -72,8 +86,15 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-    public void addItem(String name, int par, String unit) throws SQLiteException {
-        String category = "cat";
+    public void addCategory(String category)throws SQLiteException{
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(CATEGORY, category);
+        long newRowId = database.insert(CATEGORY_TABLE, null, values);
+    }
+
+    public void addItem(String name, int par, String unit, String category) throws SQLiteException {
+
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(CATEGORY, category);
@@ -84,7 +105,7 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
     }
 
     //checking if database is empty
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         SQLiteDatabase db = this.getReadableDatabase();
         String count = "SELECT count(*) FROM " + ITEMS;
         Cursor mcursor = db.rawQuery(count, null);
@@ -92,110 +113,126 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
         int icount = mcursor.getInt(0);
         mcursor.close();
         if (icount > 1) {
-            return  false;
+            return false;
+        } else {
+            return true;
+        }
+    }
+    public boolean categoryIsEmpty() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String count = "SELECT count(*) FROM " + CATEGORY_TABLE;
+        Cursor mcursor = db.rawQuery(count, null);
+        mcursor.moveToFirst();
+        int icount = mcursor.getInt(0);
+        mcursor.close();
+        if (icount > 1) {
+            return false;
         } else {
             return true;
         }
     }
 
-    public ArrayList<Item> getItems() {
+
+
+    public HashMap<String, ArrayList<Item>> getItems() {
         SQLiteDatabase db = this.getReadableDatabase();
 
         if (!this.isEmpty()) {
-            String query = "SELECT id, category, name, par, units FROM " + ITEMS;
-            Cursor cursor = db.rawQuery(query, null);
-            cursor.moveToFirst();
-            ArrayList<Item> items = new ArrayList<>();
+            categoryNames = getCategoryNames();
+            for (String cat : categoryNames) {
+                String query = "SELECT id, category, name, par, units FROM " + ITEMS + " WHERE " + CATEGORY + " = " + cat;
+                Cursor cursor = db.rawQuery(query, null);
+                cursor.moveToFirst();
 
-            String name, unit, category;
-            int par, id;
-            id = (cursor.getInt(cursor.getColumnIndex("id")));
-            name = (cursor.getString(cursor.getColumnIndex("name")));
-            par = (cursor.getInt(cursor.getColumnIndex("par")));
-            unit = (cursor.getString(cursor.getColumnIndex("units")));
-            category = "category";
-            items.add(new Item(name, par, unit, category, id));
+                items = new ArrayList<>();
+                int par = (cursor.getInt(cursor.getColumnIndex("par")));
+                int id = (cursor.getInt(cursor.getColumnIndex("id")));
+                String name = (cursor.getString(cursor.getColumnIndex("name")));
+                String unit = (cursor.getString(cursor.getColumnIndex("units")));
+                String category = (cursor.getString(cursor.getColumnIndex("category")));
 
-            while (cursor.moveToNext()) {
-
-
-
-                /*category = (cursor.getString(cursor.getColumnIndex("category")));*/
-                name = (cursor.getString(cursor.getColumnIndex("name")));
-                par = (cursor.getInt(cursor.getColumnIndex("par")));
-                unit = (cursor.getString(cursor.getColumnIndex("units")));
-                category = "category";
                 items.add(new Item(name, par, unit, category, id));
+                while (cursor.moveToNext()) {
+
+
+                    category = (cursor.getString(cursor.getColumnIndex("category")));
+                    name = (cursor.getString(cursor.getColumnIndex("name")));
+                    par = (cursor.getInt(cursor.getColumnIndex("par")));
+                    unit = (cursor.getString(cursor.getColumnIndex("units")));
+                    id = (cursor.getInt(cursor.getColumnIndex("id")));
+                    items.add(new Item(name, par, unit, category, id));
+                }
+                cursor.close();
+                categoryHashMap.put(cat, items);
             }
-            cursor.close();
-            return items;
-        } else {
-            return new ArrayList<Item>();
+            return categoryHashMap;
         }
-    }
+        return new HashMap<>();
 
-    public ArrayList<Item> getResults() {
-        SQLiteDatabase db = this.getReadableDatabase();
-
-        if (!this.isEmpty()) {
-            String query = "SELECT id, category, name, par, units, actual FROM " + CURRENT_AMOUNT;
-            Cursor cursor = db.rawQuery(query, null);
-            cursor.moveToFirst();
-            ArrayList<Item> items = new ArrayList<>();
-
-            String name, unit, category;
-            int par, id, actual;
-            id = (cursor.getInt(cursor.getColumnIndex("id")));
-            name = (cursor.getString(cursor.getColumnIndex("name")));
-            par = (cursor.getInt(cursor.getColumnIndex("par")));
-            unit = (cursor.getString(cursor.getColumnIndex("units")));
-            actual = (cursor.getInt(cursor.getColumnIndex("actual")));
-            category = "category";
-            items.add(new Item(name, par, unit, category, id, actual));
-
-            while (cursor.moveToNext()) {
-
-
-
-                /*category = (cursor.getString(cursor.getColumnIndex("category")));*/
-                name = (cursor.getString(cursor.getColumnIndex("name")));
-                par = (cursor.getInt(cursor.getColumnIndex("par")));
-                unit = (cursor.getString(cursor.getColumnIndex("units")));
-                category = "category";
-                items.add(new Item(name, par, unit, category, id,actual));
-            }
-            cursor.close();
-            return items;
-        } else {
-            return new ArrayList<Item>();
-        }
     }
 
 
-        public List<String> getCategoryNames() {
+
+        public ArrayList<Item> getResults () {
             SQLiteDatabase db = this.getReadableDatabase();
 
             if (!this.isEmpty()) {
-                String query = "SELECT category FROM " + ITEMS;
+                String query = "SELECT id, category, name, par, units, actual FROM " + CURRENT_AMOUNT;
                 Cursor cursor = db.rawQuery(query, null);
+                cursor.moveToFirst();
+                ArrayList<Item> items = new ArrayList<>();
 
-                List<String> categories = new ArrayList<String>();
+                String name, unit, category;
+                int par, id, actual;
+                id = (cursor.getInt(cursor.getColumnIndex("id")));
+                name = (cursor.getString(cursor.getColumnIndex("name")));
+                par = (cursor.getInt(cursor.getColumnIndex("par")));
+                unit = (cursor.getString(cursor.getColumnIndex("units")));
+                actual = (cursor.getInt(cursor.getColumnIndex("actual")));
+                category = "category";
+                items.add(new Item(name, par, unit, category, id, actual));
 
                 while (cursor.moveToNext()) {
-                    String category;
 
-                    categories.add((cursor.getString(cursor.getColumnIndex("category"))));
+
+
+                    /*category = (cursor.getString(cursor.getColumnIndex("category")));*/
+                    name = (cursor.getString(cursor.getColumnIndex("name")));
+                    par = (cursor.getInt(cursor.getColumnIndex("par")));
+                    unit = (cursor.getString(cursor.getColumnIndex("units")));
+                    category = "category";
+                    items.add(new Item(name, par, unit, category, id, actual));
                 }
                 cursor.close();
-                return categories;
-            }else{
-                return new ArrayList<String>();
+                return items;
+            } else {
+                return new ArrayList<Item>();
             }
-
-
         }
 
-    public void addToActualDB(String name, int par, String unit, int actual) throws SQLiteException {
+
+
+    public ArrayList<String> getCategoryNames() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<String> cats = new ArrayList<String>();
+        if (!this.categoryIsEmpty()) {
+            String query = "SELECT DISTINCT category FROM " + CATEGORY_TABLE;
+            Cursor cursor = db.rawQuery(query, null);
+
+
+
+            while (cursor.moveToNext()) {
+                cats.add((cursor.getString(cursor.getColumnIndex("category"))));
+            }
+            cursor.close();
+            cats.add("Test");
+            return cats;
+        }
+        return new ArrayList<String>();
+    }
+
+    public void addToActualDB(String name, int par, String unit, int actual) throws
+            SQLiteException {
         String category = "cat";
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -206,13 +243,17 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
         values.put(UOM_COLUMN, unit);
         long newRowId = database.insert(CURRENT_AMOUNT, null, values);
     }
-            public void clearTable () {
-                SQLiteDatabase db = this.getWritableDatabase();
-                db.execSQL(DELETE_ALL_ENTRIES);
-                db.execSQL(DELETE_ENTRIES);
-                db.execSQL(CREATE_ACTUAL_ENTRIES);
-                db.execSQL(SQL_CREATE_ENTRIES);
 
-            }
+    public void clearTable() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL(DELETE_ALL_ENTRIES);
+        db.execSQL(DELETE_ENTRIES);
+        db.execSQL(DELETE_ALL_CATEGORIES);
+        db.execSQL(CREATE_CATEGORY_TABLE);
+        db.execSQL(CREATE_ACTUAL_ENTRIES);
+        db.execSQL(SQL_CREATE_ENTRIES);
+
+    }
+
 
 }

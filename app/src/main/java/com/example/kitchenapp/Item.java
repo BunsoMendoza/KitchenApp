@@ -36,6 +36,7 @@ public class Item {
         this.id = id;
 
     }
+    public void setCategory(String category){this.category = category;}
     public void setActual(int actual){ this.actual = actual;}
     public void setName(String name){
         this.name = name;
@@ -52,6 +53,7 @@ public class Item {
     public String getName(){
         return name;
     }
+    public String getCategory(){return category;}
     public int getPar(){
         return par;
     }
