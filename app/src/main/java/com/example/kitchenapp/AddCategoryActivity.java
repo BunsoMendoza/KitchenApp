@@ -37,7 +37,8 @@ public class AddCategoryActivity extends Activity {
     }
 
     public void openAddItemActivity() {
-        Intent intent = new Intent(this, AddItemActivity.class);
+        Intent intent = new Intent(getBaseContext(), AddItemActivity.class);
         startActivity(intent);
+
     }
 }

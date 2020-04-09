@@ -140,7 +140,7 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
         if (!this.isEmpty()) {
             categoryNames = getCategoryNames();
             for (String cat : categoryNames) {
-                String query = "SELECT id, category, name, par, units FROM " + ITEMS + " WHERE " + CATEGORY + " = " + cat;
+                String query = "SELECT id, category, name, par, units FROM " + ITEMS + " WHERE " + CATEGORY + " = '" + cat +"'";
                 Cursor cursor = db.rawQuery(query, null);
                 cursor.moveToFirst();
 
@@ -209,7 +209,25 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
                 return new ArrayList<Item>();
             }
         }
+    public ArrayList<String> getCatergoryPerItem(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<String> cats = new ArrayList<String>();
+        if (!this.categoryIsEmpty()) {
+            String query = "SELECT DISTINCT category FROM " + ITEMS;
+            Cursor cursor = db.rawQuery(query, null);
+            cursor.moveToFirst();
 
+            cats.add((cursor.getString(cursor.getColumnIndex("category"))));
+
+            while (cursor.moveToNext()) {
+                cats.add((cursor.getString(cursor.getColumnIndex("category"))));
+            }
+            cursor.close();
+
+            return cats;
+        }else{
+            return new ArrayList<String>();}
+    }
 
 
     public ArrayList<String> getCategoryNames() {
@@ -218,17 +236,16 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
         if (!this.categoryIsEmpty()) {
             String query = "SELECT DISTINCT category FROM " + CATEGORY_TABLE;
             Cursor cursor = db.rawQuery(query, null);
-
-
+            cursor.moveToPosition(-1);
 
             while (cursor.moveToNext()) {
                 cats.add((cursor.getString(cursor.getColumnIndex("category"))));
             }
             cursor.close();
-            cats.add("Test");
+
             return cats;
-        }
-        return new ArrayList<String>();
+        }else{
+        return new ArrayList<String>();}
     }
 
     public void addToActualDB(String name, int par, String unit, int actual) throws

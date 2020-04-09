@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
     String itemName;
     int itemPar;
     String itemUnitOfMeasurement;
-    String categoryName;
     private Button addButton;
     private Button calculateButton;
     private Button clearButton;
@@ -33,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     HashMap<String, ArrayList<Item>> categoryHashMap = new HashMap<>();
 
     ArrayList<Item> items = new ArrayList<Item>();
-    ArrayList<Item> categoryArray;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         header.setText(categoryName);
         format(header);
         row.addView(header);
-        tableLayout.addView(row, new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+        tableLayout.addView(row, new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
     }
 
     public void createRow(String name, int par, String unit , int rowID) {

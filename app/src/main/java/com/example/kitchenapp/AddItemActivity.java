@@ -32,7 +32,6 @@ public class AddItemActivity extends Activity {
         spinner = (Spinner) findViewById(R.id.itemCategorySpinner);
 
             ArrayList<String> categories = db.getCategoryNames();
-            categories.add("test");
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                     android.R.layout.simple_spinner_item, categories);
             // Drop down layout style - list view with radio button
