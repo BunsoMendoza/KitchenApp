@@ -15,11 +15,13 @@ import android.widget.TextView;
 import androidx.core.content.res.ResourcesCompat;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ResultsActivity extends Activity {
 
     KitchenAppDbHelper db;
     ArrayList<Item> items = new ArrayList<Item>();
+    HashMap<String, ArrayList<Item>> categoryHashMap = new HashMap<>();
     int id;
     String itemName;
     int itemPar;
@@ -36,20 +38,35 @@ public class ResultsActivity extends Activity {
         db = new KitchenAppDbHelper(this);
 
         if(!db.isEmpty()){
-            items = db.getResults();
-            for (Item i : items) {
-                itemName = i.getName();
-                itemPar = i.getPar();
-                itemUnitOfMeasurement = i.getUnitOfMeasurement();
-                itemActual = i.getActual();
-                needed = itemPar - itemActual;
-                if(needed < 0){
-                    needed = 0;
+            categoryHashMap = db.getResults();
+
+            for (String category : categoryHashMap.keySet()) {
+                createCategoryHeader(category);
+                items = categoryHashMap.get(category);
+
+                for (Item i : items) {
+                    itemName = i.getName();
+                    itemPar = i.getPar();
+                    itemUnitOfMeasurement = i.getUnitOfMeasurement();
+                    itemActual = i.getActual();
+                    needed = itemPar - itemActual;
+                    if (needed < 0) {
+                        needed = 0;
+                    }
+                    createRow(itemName, itemPar, itemUnitOfMeasurement, itemActual, needed);
                 }
-                createRow(itemName, itemPar, itemUnitOfMeasurement, itemActual, needed);
             }
         }
 
+    }
+    public void createCategoryHeader(String categoryName) {
+        TableLayout tableLayout = (TableLayout) findViewById(R.id.results_table);
+        TableRow row = new TableRow(this);
+        TextView header = new TextView(this);
+        header.setText(categoryName);
+        format(header);
+        row.addView(header);
+        tableLayout.addView(row, new TableLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
     }
 
     public void createRow(String name, int par, String unit , int actual, int needed) {

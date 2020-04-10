@@ -156,16 +156,26 @@ public class MainActivity extends AppCompatActivity {
 
         EditText text;
         int actualAmount;
-        for (Item i : items) {
-            text = (EditText) findViewById(i.id);
-            actualAmount = Integer.parseInt(text.getText().toString());
-            i.actual = actualAmount;
-            db.addToActualDB(i.name, i.par, i.unitOfMeasurement, i.actual);
+
+        for (String category : categoryHashMap.keySet()) {
+            createCategoryHeader(category);
+            items = categoryHashMap.get(category);
+
+            for (Item i : items) {
+
+                text = (EditText) findViewById(i.id);
+                actualAmount = Integer.parseInt(text.getText().toString());
+                i.actual = actualAmount;
+                db.addToActualDB(i.name, i.par, i.unitOfMeasurement, i.actual, i.category);
+
+
+            }
         }
 
 
-
     }
+
+
 
 
 

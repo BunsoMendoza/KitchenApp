@@ -136,34 +136,30 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
 
     public HashMap<String, ArrayList<Item>> getItems() {
         SQLiteDatabase db = this.getReadableDatabase();
+        categoryHashMap = new HashMap<>();
 
         if (!this.isEmpty()) {
             categoryNames = getCategoryNames();
+            items = new ArrayList<>();
             for (String cat : categoryNames) {
                 String query = "SELECT id, category, name, par, units FROM " + ITEMS + " WHERE " + CATEGORY + " = '" + cat +"'";
                 Cursor cursor = db.rawQuery(query, null);
-                cursor.moveToFirst();
+                cursor.moveToPosition(-1);
 
-                items = new ArrayList<>();
-                int par = (cursor.getInt(cursor.getColumnIndex("par")));
-                int id = (cursor.getInt(cursor.getColumnIndex("id")));
-                String name = (cursor.getString(cursor.getColumnIndex("name")));
-                String unit = (cursor.getString(cursor.getColumnIndex("units")));
-                String category = (cursor.getString(cursor.getColumnIndex("category")));
-
-                items.add(new Item(name, par, unit, category, id));
                 while (cursor.moveToNext()) {
 
 
-                    category = (cursor.getString(cursor.getColumnIndex("category")));
-                    name = (cursor.getString(cursor.getColumnIndex("name")));
-                    par = (cursor.getInt(cursor.getColumnIndex("par")));
-                    unit = (cursor.getString(cursor.getColumnIndex("units")));
-                    id = (cursor.getInt(cursor.getColumnIndex("id")));
+                    int par = (cursor.getInt(cursor.getColumnIndex("par")));
+                    int id = (cursor.getInt(cursor.getColumnIndex("id")));
+                    String name = (cursor.getString(cursor.getColumnIndex("name")));
+                    String unit = (cursor.getString(cursor.getColumnIndex("units")));
+                    String category = (cursor.getString(cursor.getColumnIndex("category")));
                     items.add(new Item(name, par, unit, category, id));
                 }
-                cursor.close();
                 categoryHashMap.put(cat, items);
+                items = new ArrayList<>();
+                cursor.close();
+
             }
             return categoryHashMap;
         }
@@ -173,61 +169,40 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
 
 
 
-        public ArrayList<Item> getResults () {
+        public HashMap<String, ArrayList<Item>> getResults () {
             SQLiteDatabase db = this.getReadableDatabase();
+            categoryHashMap = new HashMap<>();
 
             if (!this.isEmpty()) {
-                String query = "SELECT id, category, name, par, units, actual FROM " + CURRENT_AMOUNT;
-                Cursor cursor = db.rawQuery(query, null);
-                cursor.moveToFirst();
-                ArrayList<Item> items = new ArrayList<>();
+                categoryNames = getCategoryNames();
+                items = new ArrayList<>();
 
-                String name, unit, category;
-                int par, id, actual;
-                id = (cursor.getInt(cursor.getColumnIndex("id")));
-                name = (cursor.getString(cursor.getColumnIndex("name")));
-                par = (cursor.getInt(cursor.getColumnIndex("par")));
-                unit = (cursor.getString(cursor.getColumnIndex("units")));
-                actual = (cursor.getInt(cursor.getColumnIndex("actual")));
-                category = "category";
-                items.add(new Item(name, par, unit, category, id, actual));
-
-                while (cursor.moveToNext()) {
+                for (String cat : categoryNames) {
+                    String query = "SELECT id, category, name, par, units, actual FROM " + CURRENT_AMOUNT +  " WHERE " + CATEGORY + " = '" + cat +"'";
+                    Cursor cursor = db.rawQuery(query, null);
+                    cursor.moveToPosition(-1);
 
 
+                    while (cursor.moveToNext()) {
 
-                    /*category = (cursor.getString(cursor.getColumnIndex("category")));*/
-                    name = (cursor.getString(cursor.getColumnIndex("name")));
-                    par = (cursor.getInt(cursor.getColumnIndex("par")));
-                    unit = (cursor.getString(cursor.getColumnIndex("units")));
-                    category = "category";
-                    items.add(new Item(name, par, unit, category, id, actual));
+                        int par = (cursor.getInt(cursor.getColumnIndex("par")));
+                        int id = (cursor.getInt(cursor.getColumnIndex("id")));
+                        String name = (cursor.getString(cursor.getColumnIndex("name")));
+                        String unit = (cursor.getString(cursor.getColumnIndex("units")));
+                        int actual = (cursor.getInt(cursor.getColumnIndex("actual")));
+                        String category = (cursor.getString(cursor.getColumnIndex("category")));
+                        items.add(new Item(name, par, unit, category, id, actual));
+                    }
+                    categoryHashMap.put(cat, items);
+                    items = new ArrayList<>();
+                    cursor.close();
                 }
-                cursor.close();
-                return items;
+                return categoryHashMap;
             } else {
-                return new ArrayList<Item>();
+                return new HashMap<>();
             }
         }
-    public ArrayList<String> getCatergoryPerItem(){
-        SQLiteDatabase db = this.getReadableDatabase();
-        ArrayList<String> cats = new ArrayList<String>();
-        if (!this.categoryIsEmpty()) {
-            String query = "SELECT DISTINCT category FROM " + ITEMS;
-            Cursor cursor = db.rawQuery(query, null);
-            cursor.moveToFirst();
 
-            cats.add((cursor.getString(cursor.getColumnIndex("category"))));
-
-            while (cursor.moveToNext()) {
-                cats.add((cursor.getString(cursor.getColumnIndex("category"))));
-            }
-            cursor.close();
-
-            return cats;
-        }else{
-            return new ArrayList<String>();}
-    }
 
 
     public ArrayList<String> getCategoryNames() {
@@ -248,9 +223,8 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
         return new ArrayList<String>();}
     }
 
-    public void addToActualDB(String name, int par, String unit, int actual) throws
+    public void addToActualDB(String name, int par, String unit, int actual, String category) throws
             SQLiteException {
-        String category = "cat";
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(CATEGORY, category);
