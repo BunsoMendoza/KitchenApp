@@ -178,7 +178,7 @@ public class KitchenAppDbHelper extends SQLiteOpenHelper {
                 items = new ArrayList<>();
 
                 for (String cat : categoryNames) {
-                    String query = "SELECT id, category, name, par, units, actual FROM " + CURRENT_AMOUNT +  " WHERE " + CATEGORY + " = '" + cat +"'";
+                    String query = "SELECT id, category, name, par, units, actual FROM " + CURRENT_AMOUNT +  " WHERE " + CATEGORY + " = '" + cat +"'" + "AND " + TIMESTAMP + " =  (SELECT MAX(" + TIMESTAMP +") FROM " + CURRENT_AMOUNT + ")";
                     Cursor cursor = db.rawQuery(query, null);
                     cursor.moveToPosition(-1);
 

@@ -43,14 +43,6 @@ public class MainActivity extends AppCompatActivity {
         clearButton = findViewById(R.id.clear_button);
         addButton = findViewById(R.id.add_button);
         calculateButton = findViewById(R.id.calculate_button);
-        /*Bundle extras = getIntent().getExtras();
-
-        if (extras != null) {
-            itemName = extras.getString("name");
-            itemPar = extras.getString("par");
-            itemUnitOfMeasurement = extras.getString("unitOfMeasurement");
-            createRow(itemName, itemPar, itemUnitOfMeasurement);
-        }*/
 
 
 
